@@ -56,6 +56,24 @@ var ytApiKey = PropertiesService.getScriptProperties().getProperty('ytApiKey');
  * - Delete variables for URL handling
  *
  */
+
+/* Consolidated Function for URL handling */
+/**
+ *
+ *
+ * Available "part" Parameters:
+ * snippet, statistics
+ *
+ */
+function (videoID, partParam){
+  if (partParam)
+  var url = "https://www.googleapis.com/youtube/v3/videos?part=" + partParam; 
+  url = url + "&id=" +  videoID + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
+  var videoListResponse = UrlFetchApp.fetch(url); 
+  var json = JSON.parse(videoListResponse.getContentText());
+  return json;
+}
+
  /* For Snippet URLs */
 function snippetURL(videoID){
   var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id="; 
