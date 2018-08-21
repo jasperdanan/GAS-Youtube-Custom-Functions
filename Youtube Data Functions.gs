@@ -57,7 +57,7 @@ var ytApiKey = PropertiesService.getScriptProperties().getProperty('ytApiKey');
  *
  */
  /* For Snippet URLs */
-function sinppetURL(videoID){
+function snippetURL(videoID){
   var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id="; 
   url = url +  videoID + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
   var videoListResponse = UrlFetchApp.fetch(url); 
