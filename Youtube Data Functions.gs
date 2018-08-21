@@ -42,10 +42,38 @@ function getYoutubeID(url) {
 
 //Global Constants
 var ytApiKey = PropertiesService.getScriptProperties().getProperty('ytApiKey');
-var snippetURL = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=";
-var statsURL = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=";
+//var snippetURL = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=";
+//var statsURL = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=";
 
 /* === WIP === */
+
+/**
+ * "sub function who would do the url thingy for you without needing the same lines everywhere"
+ * - Zouva, 2018
+ *
+ * TODO:
+ * - Create Function
+ * - Delete variables for URL handling
+ *
+ */
+ /* For Snippet URLs */
+function sinppetURL(videoID){
+  var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id="; 
+  url = url +  videoID + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
+  var videoListResponse = UrlFetchApp.fetch(url); 
+  var json = JSON.parse(videoListResponse.getContentText());
+  return json;
+}
+
+/* For Statistics URLs */
+function statsURL(videoID){
+  var url = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id="; 
+  url = url +  videoID + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
+  var videoListResponse = UrlFetchApp.fetch(url); 
+  var json = JSON.parse(videoListResponse.getContentText());
+  return json;
+}
+
 /**
  * Retrieves custom Youtube information
  *
@@ -55,10 +83,7 @@ var statsURL = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id=
  */
 function getYoutubeInfo(videoID){
   var array = [];
-  var url = snippetURL + videoID;
-  url = url + "&key=" + ytApiKey;
-  var videoListResponse = UrlFetchApp.fetch(url);
-  var json = JSON.parse(videoListResponse.getContentText());
+  snippetURL(videoID);
 }
 
 /* === Individual Functions === */
@@ -74,10 +99,7 @@ function youtubeVideoPubDate(videoID){
   if (videoID.map) {            // Test whether input is an array.
     return videoID.map(youtubeVideoPubDate); // Recurse over array if so.
   } else {
-    var url = snippetURL + videoID; 
-    url = url + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
-    var videoListResponse = UrlFetchApp.fetch(url); 
-    var json = JSON.parse(videoListResponse.getContentText());
+    var json = snippetURL(videoID);
     var stringDateTime = json["items"][0]["snippet"]["publishedAt"]; // Extract publishedAt info
     var dateTime = new Date(stringDateTime); // DateTime string to proper "Date" format
     return dateTime;
@@ -96,10 +118,7 @@ function youtubeVideoTitle(videoID){
   if (videoID.map) {            // Test whether input is an array.
     return videoID.map(youtubeVideoTitle); // Recurse over array if so.
   } else {
-    var url = snippetURL + videoID;
-    url = url + "&key=" + ytApiKey;
-    var videoListResponse = UrlFetchApp.fetch(url);
-    var json = JSON.parse(videoListResponse.getContentText());
+    var json = snippetURL(videoID);
     return json["items"][0]["snippet"]["title"];
   }
 }
@@ -116,10 +135,7 @@ function youtubeVideoChannel(videoID){
   if (videoID.map) {            // Test whether input is an array.
     return videoID.map(youtubeVideoChannel); // Recurse over array if so.
   } else {
-    var url = snippetURL + videoID;
-    url = url + "&key=" + ytApiKey;
-    var videoListResponse = UrlFetchApp.fetch(url);
-    var json = JSON.parse(videoListResponse.getContentText());
+    var json = snippetURL(videoID);
     return json["items"][0]["snippet"]["channelTitle"];
   }
 }
@@ -137,10 +153,7 @@ function youtubeVideoViews(videoID){
   if (videoID.map) {            // Test whether input is an array.
     return videoID.map(youtubeVideoViews); // Recurse over array if so.
   } else {
-    var url = statsURL + videoID;
-    url = url + "&key=" + ytApiKey;
-    var videoListResponse = UrlFetchApp.fetch(url);
-    var json = JSON.parse(videoListResponse.getContentText());
+    var json = statsURL(videoID);
     var numViews = json["items"][0]["statistics"]["viewCount"];
     numViews =+ numViews; // Change string value to integer
     return numViews;
@@ -169,9 +182,7 @@ function youtubeVideoViewsCache(videoID){
       return cached;
     }
 
-    var url = statsURL + videoID + "&key=" + ytApiKey;
-    var videoListResponse = UrlFetchApp.fetch(url);
-    var json = JSON.parse(videoListResponse.getContentText());
+    var json = statsURL(videoID);
     var contents = json["items"][0]["statistics"]["viewCount"];
     
     cache.put("viewsCache=" + videoID, contents, 600); // Cache for 10 minutes
