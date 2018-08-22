@@ -67,14 +67,15 @@ var ytApiKey = PropertiesService.getScriptProperties().getProperty('ytApiKey');
  *
  */
 function videoPart(videoID, partParam){
-  if (partParam){
+  if (checkPartValidation(partParam)){ // Calls for parameter validation
     var url = "https://www.googleapis.com/youtube/v3/videos?part=" + partParam; 
     url = url + "&id=" +  videoID + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
     var videoListResponse = UrlFetchApp.fetch(url); 
     var json = JSON.parse(videoListResponse.getContentText());
     return json;
   } else {
-    throw
+    console.error("Invalid Paramters");
+    throw new Error("Invalid Parameters");
   }
 
 }
@@ -150,7 +151,7 @@ function youtubeVideoPubDate(videoID){
   if (videoID.map) {            // Test whether input is an array.
     return videoID.map(youtubeVideoPubDate); // Recurse over array if so.
   } else {
-    var json = snippetURL(videoID);
+    var json = videoPart(videoID, "snippet");
     var stringDateTime = json["items"][0]["snippet"]["publishedAt"]; // Extract publishedAt info
     var dateTime = new Date(stringDateTime); // DateTime string to proper "Date" format
     return dateTime;
@@ -169,7 +170,7 @@ function youtubeVideoTitle(videoID){
   if (videoID.map) {            // Test whether input is an array.
     return videoID.map(youtubeVideoTitle); // Recurse over array if so.
   } else {
-    var json = snippetURL(videoID);
+    var json = videoPart(videoID, "snippet");
     return json["items"][0]["snippet"]["title"];
   }
 }
@@ -186,7 +187,7 @@ function youtubeVideoChannel(videoID){
   if (videoID.map) {            // Test whether input is an array.
     return videoID.map(youtubeVideoChannel); // Recurse over array if so.
   } else {
-    var json = snippetURL(videoID);
+    var json = videoPart(videoID, "snippet");
     return json["items"][0]["snippet"]["channelTitle"];
   }
 }
@@ -204,7 +205,7 @@ function youtubeVideoViews(videoID){
   if (videoID.map) {            // Test whether input is an array.
     return videoID.map(youtubeVideoViews); // Recurse over array if so.
   } else {
-    var json = statsURL(videoID);
+    var json = videoPart(videoID, "statistics");
     var numViews = json["items"][0]["statistics"]["viewCount"];
     numViews =+ numViews; // Change string value to integer
     return numViews;
@@ -233,7 +234,7 @@ function youtubeVideoViewsCache(videoID){
       return cached;
     }
 
-    var json = statsURL(videoID);
+    var json = videoPart(videoID, "statistics");
     var contents = json["items"][0]["statistics"]["viewCount"];
     
     cache.put("viewsCache=" + videoID, contents, 600); // Cache for 10 minutes
