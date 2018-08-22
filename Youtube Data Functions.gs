@@ -52,8 +52,9 @@ var ytApiKey = PropertiesService.getScriptProperties().getProperty('ytApiKey');
  * - Zouva, 2018
  *
  * TODO:
- * - Create Function
- * - Delete variables for URL handling
+ * - Check if a parameter is passed
+ *   Then check if it is an option
+ * - Caching service
  *
  */
 
@@ -65,13 +66,45 @@ var ytApiKey = PropertiesService.getScriptProperties().getProperty('ytApiKey');
  * snippet, statistics
  *
  */
-function (videoID, partParam){
-  if (partParam)
-  var url = "https://www.googleapis.com/youtube/v3/videos?part=" + partParam; 
-  url = url + "&id=" +  videoID + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
-  var videoListResponse = UrlFetchApp.fetch(url); 
-  var json = JSON.parse(videoListResponse.getContentText());
-  return json;
+function videoPart(videoID, partParam){
+  if (partParam){
+    var url = "https://www.googleapis.com/youtube/v3/videos?part=" + partParam; 
+    url = url + "&id=" +  videoID + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
+    var videoListResponse = UrlFetchApp.fetch(url); 
+    var json = JSON.parse(videoListResponse.getContentText());
+    return json;
+  } else {
+    throw
+  }
+
+}
+
+/**
+ *  Function to check if passed parameter is a valid parameter
+ * 
+ * @param {string} partParam Parameter to check if its an available parameter.
+ * @return Boolean if parameter exists in array
+ */
+function checkPartValidation(partParam){
+  var availablePartParams = [
+  "snippet",
+  "statistics"
+  // Future params
+  // contentDetails
+  // fileDetails
+  // player
+  // processingDetails
+  // recordingDetails
+  // status
+  // suggestions
+  // topicDetails
+  ];
+
+  if (partParam) { // If Function to make sure that the partParam is not empty
+    return (availablePartParams.indexOf("partParam") > -1); // Checks if string is in array
+  } else {
+    return false;
+  }
 }
 
  /* For Snippet URLs */
