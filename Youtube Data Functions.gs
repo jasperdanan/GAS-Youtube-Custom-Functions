@@ -102,8 +102,9 @@ function checkPartValidation(partParam){
   ];
 
   if (partParam) { // If Function to make sure that the partParam is not empty
-    return (availablePartParams.indexOf("partParam") > -1); // Checks if string is in array
+    return (availablePartParams.indexOf(partParam) > -1); // Checks if string is in array
   } else {
+    console.error("Parameter is undefined or empty. Recieved: " + partParam);
     return false;
   }
 }
