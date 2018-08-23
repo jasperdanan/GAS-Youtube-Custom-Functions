@@ -52,8 +52,6 @@ var ytApiKey = PropertiesService.getScriptProperties().getProperty('ytApiKey');
  * - Zouva, 2018
  *
  * TODO:
- * - Check if a parameter is passed
- *   Then check if it is an option
  * - Caching service
  *
  */
@@ -107,24 +105,6 @@ function checkPartValidation(partParam){
     console.error("Parameter is undefined or empty. Recieved: " + partParam);
     return false;
   }
-}
-
- /* For Snippet URLs */
-function snippetURL(videoID){
-  var url = "https://www.googleapis.com/youtube/v3/videos?part=snippet&id="; 
-  url = url +  videoID + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
-  var videoListResponse = UrlFetchApp.fetch(url); 
-  var json = JSON.parse(videoListResponse.getContentText());
-  return json;
-}
-
-/* For Statistics URLs */
-function statsURL(videoID){
-  var url = "https://www.googleapis.com/youtube/v3/videos?part=statistics&id="; 
-  url = url +  videoID + "&key=" + ytApiKey; // Use snippet url with videoID parameter and api key
-  var videoListResponse = UrlFetchApp.fetch(url); 
-  var json = JSON.parse(videoListResponse.getContentText());
-  return json;
 }
 
 /**
